@@ -27,13 +27,13 @@
 /* ─── Base (intentionally minimal — no hard reset) ───────── */
 html {
   scroll-behavior: smooth;
+  font-size: 25px; /* ← 改這裡！所有 rem 單位都會跟著放大 */
 }
 
 body {
   background-color: var(--color-cream);
   color: var(--color-text);
   font-family: var(--font-sans);
-  font-size: 15px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }

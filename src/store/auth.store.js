@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { authAPI } from '../components/lib/api'
 
 const makeOrder = (items, shipping, address, total, orderId) => ({
   id: orderId || `ORD-${Date.now()}`,
@@ -16,39 +17,34 @@ export const useAuthStore = create(
     (set, get) => ({
       user: null,
       isLoggedIn: false,
+      loading: false,
+      error: null,
 
-      register: (name, email, password) => {
-        const user = { id: `u_${Date.now()}`, name, email, password, orders: [], createdAt: new Date().toISOString() }
-        set({ user, isLoggedIn: true })
-        return { success: true }
-      },
-
-      login: (email, password) => {
-        // Demo: any email/password combo works; in production this hits an API
-        const { user } = get()
-        if (user && user.email === email) {
-          set({ isLoggedIn: true })
-          return { success: true }
+      register: async (name, email, password) => {
+        set({ loading: true, error: null })
+        const data = await authAPI.register(name, email, password, '')
+        if (data.message === 'Member created successfully') {
+          set({ user: { name, email, orders: [] }, isLoggedIn: true })
+        } else {
+          set({ error: data.message })
         }
-        // New demo user
-        const demoUser = { id: `u_${Date.now()}`, name: email.split('@')[0], email, password, orders: [], createdAt: new Date().toISOString() }
-        set({ user: demoUser, isLoggedIn: true })
-        return { success: true }
+        set({ loading: false })
+        return data
       },
 
-      logout: () => set({ isLoggedIn: false }),
-
-      updateProfile: (data) =>
-        set({ user: { ...get().user, ...data } }),
-
-      placeOrder: (items, shipping, address, total) => {
-        const order = makeOrder(items, shipping, address, total)
-        const user = get().user
-        if (user) {
-          set({ user: { ...user, orders: [order, ...(user.orders || [])] } })
+      login: async (email, password) => {
+        set({ loading: true, error: null })
+        const data = await authAPI.login(email, password)
+        if (data.message === '登入成功') {
+          set({ user: { name: email.split('@')[0], email, orders: [] }, isLoggedIn: true })
+        } else {
+          set({ error: data.message })
         }
-        return order
+        set({ loading: false })
+        return data
       },
+
+      logout: () => set({ user: null, isLoggedIn: false }),
     }),
     { name: 'pure-auth' }
   )

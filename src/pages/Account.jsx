@@ -13,15 +13,21 @@ function AuthForm({ onLogin, onRegister }) {
   const f = (k) => ({ value: form[k], onChange: (e) => setForm({ ...form, [k]: e.target.value }) })
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!form.email || !form.password) { setError('請填寫所有必填欄位'); return }
-    if (tab === 'register' && form.password !== form.confirm) { setError('兩次密碼不符'); return }
-    setLoad(true)
-    await new Promise((r) => setTimeout(r, 500))
-    if (tab === 'login') onLogin(form.email, form.password)
-    else onRegister(form.name, form.email, form.password)
-    setLoad(false)
+  e.preventDefault()
+  if (!form.email || !form.password) { setError('請填寫所有必填欄位'); return }
+  if (tab === 'register' && form.password !== form.confirm) { setError('兩次密碼不符'); return }
+  setLoad(true)
+
+  let result
+  if (tab === 'login') result = await onLogin(form.email, form.password)
+  else result = await onRegister(form.name, form.email, form.password)
+
+  // store 裡如果有 error 就顯示
+  if (result?.message && result.message !== '登入成功' && result.message !== 'Member created successfully') {
+    setError(result.message)
   }
+  setLoad(false)
+}
 
   return (
     <div className="max-w-sm mx-auto py-10 md:py-16 px-4">

@@ -27,7 +27,7 @@ export default function Navbar() {
   return (
     <>
       <header
-        className="sticky top-0 z-50 transition-all duration-300"
+        className="sticky top-0 z-50 transition-all duration-300 "
         style={{
           background: scrolled ? 'rgba(250,246,240,0.97)' : 'var(--color-cream)',
           borderBottom: `1px solid ${scrolled ? 'var(--color-border)' : 'transparent'}`,
@@ -35,7 +35,7 @@ export default function Navbar() {
         }}
       >
         <div
-          className="container-page flex items-center justify-between"
+          className="container-page flex items-center justify-between "
           style={{ height: '64px' }}
         >
           {/* ── Logo ── */}
